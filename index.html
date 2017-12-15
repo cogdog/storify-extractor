@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<title>Storify Embeddable Link Extractor</title>
+
+		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+		<link rel='stylesheet' type='text/css' href='assets/css/style.css' />
+		<link rel='stylesheet' type='text/css' href='assets/css/bootstrap.css' />
+		<link rel='stylesheet' type='text/css' href='assets/css/prettify.css' />
+		
+		<style type='text/css'>
+		label, input, textarea {display:block;}
+		label {margin:1em, 0, 0; font-weight:900; }
+		input, textarea {width: 90%;}
+		
+		#home strong, #home code {
+			font-weight: bold;
+			color: #000;
+		}
+		#home li {
+    		color: #000;
+		}
+   		</style>
+
+		<!--[if lt IE 9]><script type='text/javascript' src='assets/javascript/html5.js'></script><![endif]-->
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script type='text/javascript' src='assets/javascript/prettify.js'></script>
+
+
+
+	</head>
+	<body onload='prettyPrint()'>
+	
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+		  <div class="container">
+			<a class="brand" href="#">Storify Embeddable Link Extractor</a>
+			<div class="nav-collapse">
+			  <ul class="nav">
+				<li class="active"><a href="#">Extract It</a></li>
+				<li><a href="https://github.com/cogdog/storify-extractor">Code</a></li>
+				<li><a href="http://cog.dog/">by cogdog</a></li>
+			  </ul>
+			</div><!-- /.nav-collapse -->
+		  </div>
+		</div><!-- /navbar-inner -->
+	</div>
+		
+  <div class='row-fluid'>
+  		<div class='hero-unit' id="home">
+			<header>
+				<h1 class=''>Storify Embeddable Link Extractor</h1>
+				<p>A means to pull out all embeddable links from a Storify that can be quickly copy/pasted to Wordpress.</p>
+			</header>
+
+			
+			<h2>What/Why?</h2>
+			<p><a href="https://storify.com/faq-eol">Storify is going away</a> and taking your stuff with it. Reclaim your storifies now, this can work as an Wordpress site, these are the links that can be autoembedded on any Wordpress page or Post. Here's how:</p>
+			
+			<ol>
+			<li>Go to your Storify you wish to preserve, e.g. <strong>https://storify.com/cogdog/ds106-tips-for-audio-storytelling</strong></li>
+			<li>In the browser url field, add <strong>.html</strong> and go to this new location, e.g. 
+			<strong>https://storify.com/cogdog/ds106-tips-for-audio-storytelling.html</strong>. This is the static HTML versiom you get from the Storify export instructions.</li>
+			<li>Use your browser features to <strong>View Source</strong>, copy the entire source HTML.</li>
+			<li>Paste in the input field below, then click <strong>Get Links</strong>.</li>
+			<li>There it is! Copy the contents from the Extracted Links field, and paste into a blank Wordpress post. Watch the embedding happen.</li>
+			</ol>
+			
+			<p>Dress up your post with featured images, dancing baby gifs, and anything else you like. <a href="http://ds106.us/handbook/tools/audio-storytelling-tips/">See how the example above turned out.</a> You have reclaimed your storify. Celebrate.</p>
+			
+		<form action="javascript:alert( 'Uh oh, something went wrong, Paging @cogog?' );">
+
+	  	<label for="raw"></label>
+	  	
+	  	<span class="label label-important">Storify Source HTML</span>
+	  	<textarea id="raw" rows="10"></textarea>
+	  	
+	  	<label for="links"></label>
+	  	<span class="label label-important">Extracted Links</span>
+	  	<textarea id="links" rows="10"></textarea>
+
+		<input type="submit" value="Extract Links">
+		
+	  	</form>
+
+
+		</div>	
+			<footer class="span12">
+			<div class="alert">
+			 a barking dog production &bull; <a href="http://cog.dog/">cog.dog</a> &bull; <a href="http://cogdogblog.com">cogdogblog.com</a>
+			</div>
+			</footer>
+			</div>
+
+		
+		<a href='https://github.com/cogdog/storify-extractor' class='github-ribbon'><img src='assets/images/github-ribbons/white.png' /></a>
+	</div>	
+	
+	
+	<script>
+function getAllMatches(regex, text) {
+	// ----h/t https://stackoverflow.com/a/29999424/2418186
+	
+    if (regex.constructor !== RegExp) {
+        throw new Error('not RegExp');
+    }
+
+    var res = [];
+    var match = null;
+
+    if (regex.global) {
+        while (match = regex.exec(text)) {
+            res.push(match);
+        }
+    }
+    else {
+        if (match = regex.exec(text)) {
+            res.push(match);
+        }
+    }
+
+    return res;
+}
+
+$( "form" ).submit(function( event ) {
+	// our raw input. yum
+	var raw = $('#raw').val();
+
+	// the pattern that finds all storify links worth extracting
+	var regex = /data-permalink=\"(https?:\/\/[^\s]+)\"/g;
+	
+	// go grep it
+	var res = getAllMatches(regex, raw);
+
+	// holder for results
+	var urls = [];
+  
+  	// walk through the matches
+	res.forEach(function (item) {
+	
+		// we want to skip any elements that are storify internals (text, headings)
+		if ( item[0].indexOf('storify.com') == -1) {
+			// chop the trailing quote and take everything after data-permalink="
+			urls.push(item[0].slice(0, -1).substring(16));
+		} else {
+		
+			// some day I might figure out how to parse out the storify text, my grep sucks
+		}
+	});
+	
+	// insert the results
+	$('#links').val( urls.join("\n\n"));
+	
+	alert('success! copy the results, and then paste into a Wordpress editor.');
+  
+  	event.preventDefault();
+});
+</script>
+
+	</body>
+</html>
