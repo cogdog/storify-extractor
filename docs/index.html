@@ -123,7 +123,13 @@ function getAllMatches(regex, text) {
 }
 
 $( "form" ).submit(function( event ) {
-	// our raw input. yum
+	// our raw input. yum. 
+	var raw = $('#raw').val()
+	
+	// add some new lines after list items so it's easier to search
+	$('#raw').val(raw.replace(/<\/div><\/div><\/li>/g,"</div></div></li>\n"));
+	
+	// now we have data to work with
 	var raw = $('#raw').val();
 
 	// the pattern that finds all storify links worth extracting
@@ -134,6 +140,10 @@ $( "form" ).submit(function( event ) {
 
 	// holder for results
 	var urls = [];
+	
+	// counters
+	var linkcount = 0;
+	var textcount = 0;
   
   	// walk through the matches
 	res.forEach(function (item) {
@@ -142,16 +152,32 @@ $( "form" ).submit(function( event ) {
 		if ( item[0].indexOf('storify.com') == -1) {
 			// chop the trailing quote and take everything after data-permalink="
 			urls.push(item[0].slice(0, -1).substring(16));
-		} else {
-		
-			// some day I might figure out how to parse out the storify text, my grep sucks
+			linkcount++;
+			
+		} else if (item[0] != 'data-permalink="https://storify.com/"') {
+			// This is storify text content, skip ones that point only to storify, they are junk
+			
+			// create a regex that starts with the match pattern and captures the text in div
+			var storyifyregex = new RegExp(item[0] + '(.*)emojify">(.*)<\/div><\/div><\/li>', 'i');
+			
+			// run match on whole thing to find this line
+			storify_str = raw.match(storyifyregex);
+			
+			// push the text, it is second item in match
+			urls.push( storify_str[2] );
+			
+			textcount++;
 		}
 	});
 	
-	// insert the results
+	// insert the results, put double link breaks between them
 	$('#links').val( urls.join("\n\n"));
 	
-	alert('success! copy the results, and then paste into a Wordpress editor.');
+	var results = linkcount + ' urls';
+	
+	if (textcount) results += ' and ' + textcount + ' text blocks/headings';
+	
+	alert(results + ' extracted from this Storify! Copy the results and then paste where needed, like  a Wordpress editor.');
   
   	event.preventDefault();
 });
