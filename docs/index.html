@@ -172,8 +172,10 @@ $( "form" ).submit(function( event ) {
 		}
 	});
 	
-	// insert the results, put double link breaks between them
-	$('#links').val( urls.join("\r\n\r\n"));
+	// insert the results, put double linkbreaks between them
+	var foundlinks = urls.join("\r\n\r\n");
+	
+	$('#links').val(foundlinks);
 	
 	var results = linkcount + ' urls';
 	
