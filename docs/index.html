@@ -126,14 +126,13 @@ $( "form" ).submit(function( event ) {
 	// our raw input. yum. 
 	var raw = $('#raw').val()
 	
+	
+	// make sure we replace any urls that start with "//" with "http://"
+	raw = raw.replace(/data-permalink="\/\//g,"data-permalink=\"http://");
+	
 	// add some new lines after list items so it's easier to search
-	$('#raw').val(raw.replace(/<\/div><\/div><\/li>/g,"</div></div></li>\n"));
+	raw = raw.replace(/<\/div><\/div><\/li>/g,"</div></div></li>\n");
 	
-	$('#raw').val(raw.replace(/data-permalink="\/\//g,"data-permalink=\"http://"));
-	
-	// now we have data to work with
-	var raw = $('#raw').val();
-
 	// the pattern that finds all storify links worth extracting
 	var regex = /data-permalink=\"(https?:\/\/[^\s]+)\"/g;
 	
@@ -172,10 +171,9 @@ $( "form" ).submit(function( event ) {
 		}
 	});
 	
-	// insert the results, put double linkbreaks between them
-	var foundlinks = urls.join("\r\n\r\n");
+	// insert the results, put double link breaks between them
 	
-	$('#links').val(foundlinks);
+	$('#links').val( urls.join("\n\n"));
 	
 	var results = linkcount + ' urls';
 	
