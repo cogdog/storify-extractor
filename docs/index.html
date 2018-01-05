@@ -129,7 +129,7 @@ $( "form" ).submit(function( event ) {
 	// add some new lines after list items so it's easier to search
 	$('#raw').val(raw.replace(/<\/div><\/div><\/li>/g,"</div></div></li>\n"));
 	
-	$('#raw').val(raw.replace(/data-permalink="\/\//g,"data-permalink=\"https://"));
+	$('#raw').val(raw.replace(/data-permalink="\/\//g,"data-permalink=\"http://"));
 	
 	// now we have data to work with
 	var raw = $('#raw').val();
